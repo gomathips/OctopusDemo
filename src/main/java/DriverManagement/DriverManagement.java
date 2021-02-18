@@ -47,14 +47,39 @@ public class DriverManagement {
         }
         else throw new RuntimeException("URL not found in properties config");
     }
+    public static String getDriverVersion() {
+        String version = prop.getProperty("CHROME_DRIVER_VERSION");
+        if(version != null) {
+            return version;
+        }
+        else throw new RuntimeException("version not found in properties config");
+    }
+
+    public static String getOSType(){
+        String osType = prop.getProperty("OS_TYPE");
+        if(osType != null) {
+            return osType;
+        }
+        else throw new RuntimeException("OS type not found in properties config");
+    }
+
+    public static String getDriverPath(String osType) {
+        if(osType.equals("Windows")) {
+            return String.format("%s/src/main/resources/drivers/chromedriver-%s-%s.exe",
+                    path, osType, getDriverVersion());
+        }
+        else {
+            return String.format("%s/src/main/resources/drivers/chromedriver-%s-%s",
+                    path, osType, getDriverVersion());
+        }
+    }
 
     public static void initializeDriver(){
         if (driver != null) {
             return;
         }
         loadProps();
-        System.setProperty("webdriver.chrome.driver",
-                path + "/src/main/resources/drivers/chromedriver-mac");
+        System.setProperty("webdriver.chrome.driver", getDriverPath(getOSType()));
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().setScriptTimeout(DriverManagement.getWait(),
